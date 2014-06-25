@@ -12,7 +12,6 @@
 #define SYSRQ_REBOOT    "REBOOT"
 #define POWEROFF        "poweroff"
 
-#define SYSRQ_MASK      "/proc/sys/kernel/sysrq"
 #define SYSRQ_TRIGGER   "/proc/sysrq-trigger"
 #define SYS_POWER_STATE "/sys/power/state"
 
@@ -29,46 +28,6 @@ static void die()
 	        SYSRQ_REBOOT,
 	        POWEROFF);
 	exit(1);
-}
-
-/* Documentation/sysrq.txt:
- *
- * Here is the list of possible values in /proc/sys/kernel/sysrq:
- *    0 - disable sysrq completely
- *    1 - enable all functions of sysrq
- *   >1 - bitmask of allowed sysrq functions (see below for detailed function
- *        description):
- *           2 =   0x2 - enable control of console logging level
- *           4 =   0x4 - enable control of keyboard (SAK, unraw)
- *           8 =   0x8 - enable debugging dumps of processes etc.
- *          16 =  0x10 - enable sync command
- *          32 =  0x20 - enable remount read-only
- *          64 =  0x40 - enable signalling of processes (term, kill, oom-kill)
- *         128 =  0x80 - allow reboot/poweroff
- *         256 = 0x100 - allow nicing of all RT tasks
- *
- * You can set the value in the file by the following command:
- *     echo "number" >/proc/sys/kernel/sysrq
- */
-static int sysrq_set(unsigned short flags)
-{
-	FILE *f = NULL;
-	unsigned short cflags = 0;
-
-	f = fopen(SYSRQ_MASK, "w+e");
-	if (f == NULL) goto fail;
-	if (fscanf(f, "%hu", &cflags) == EOF) goto close;
-	if (!(flags & 0x1)) {
-		rewind(f);
-		fprintf(f, "%d", flags | cflags);
-	}
-	fclose(f);
-	return ferror(f);
-close:
-	fclose(f);
-fail:
-	perror(SYSRQ_MASK);
-	return -1;
 }
 
 static int write_string(const char *s, const char *path)
@@ -98,7 +57,6 @@ int main(int argc, char const **argv)
 	args[i++] = SYSTEMCTL;
 
 	if (strcmp(argv[1], SYSRQ_REBOOT) == 0) {
-		sysrq_set(0x80);
 		return !!write_string("b", SYSRQ_TRIGGER);
 	} else if (strcmp(argv[1], SYS_SUSPEND) == 0) {
 		return !!write_string("mem", SYS_POWER_STATE);
