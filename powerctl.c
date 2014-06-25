@@ -4,27 +4,30 @@
 #include <unistd.h>
 #include <errno.h>
 
-#define SYSTEMCTL     "/usr/bin/systemctl"
-#define PROGNAME      "powerctl"
-#define SUSPEND       "suspend"
-#define REBOOT        "reboot"
-#define SYSRQ_REBOOT  "REBOOT"
-#define POWEROFF      "poweroff"
+#define SYSTEMCTL       "/usr/bin/systemctl"
+#define PROGNAME        "powerctl"
+#define SUSPEND         "suspend"
+#define SYS_SUSPEND     "SUSPEND"
+#define REBOOT          "reboot"
+#define SYSRQ_REBOOT    "REBOOT"
+#define POWEROFF        "poweroff"
 
-#define SYSRQ_MASK    "/proc/sys/kernel/sysrq"
-#define SYSRQ_TRIGGER "/proc/sysrq-trigger"
+#define SYSRQ_MASK      "/proc/sys/kernel/sysrq"
+#define SYSRQ_TRIGGER   "/proc/sysrq-trigger"
+#define SYS_POWER_STATE "/sys/power/state"
 
-#define MAX_ARGS      0x10
+#define MAX_ARGS        0x10
 
 static void die() __attribute__((noreturn));
 static void die()
 {
-	fprintf(stderr, "Usage: %s %s|%s|%s|%s\n",
+	fprintf(stderr, "Usage: %s %s|%s|%s|%s|%s\n",
 	        PROGNAME,
 	        SUSPEND,
-	        POWEROFF,
+	        SYS_SUSPEND,
 	        REBOOT,
-	        SYSRQ_REBOOT);
+	        SYSRQ_REBOOT,
+	        POWEROFF);
 	exit(1);
 }
 
@@ -68,19 +71,21 @@ fail:
 	return -1;
 }
 
-static int sysrq_cmd(char c)
+static int write_string(const char *s, const char *path)
 {
 	FILE *f = NULL;
 
-	f = fopen(SYSRQ_TRIGGER, "we");
-	if (f == NULL) {
-		perror(SYSRQ_TRIGGER);
-		return -1;
-	}
-
-	fputc(c, f);
+	f = fopen(path, "we");
+	if (f == NULL) goto fail;
+	if (fputs(s, f) == EOF) goto close;
 	fclose(f);
 	return ferror(f);
+
+close:
+	fclose(f);
+fail:
+	perror(path);
+	return -1;
 }
 
 int main(int argc, char const **argv)
@@ -94,7 +99,9 @@ int main(int argc, char const **argv)
 
 	if (strcmp(argv[1], SYSRQ_REBOOT) == 0) {
 		sysrq_set(0x80);
-		return !!sysrq_cmd('b');
+		return !!write_string("b", SYSRQ_TRIGGER);
+	} else if (strcmp(argv[1], SYS_SUSPEND) == 0) {
+		return !!write_string("mem", SYS_POWER_STATE);
 	} else if (strcmp(argv[1], SUSPEND) == 0) {
 		args[i++] = SUSPEND;
 		args[i++] = "--force";
