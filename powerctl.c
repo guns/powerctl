@@ -4,8 +4,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#define MAX_ARGS      0x10
-
+#define SYSTEMCTL     "/usr/bin/systemctl"
 #define PROGNAME      "powerctl"
 #define SUSPEND       "suspend"
 #define REBOOT        "reboot"
@@ -14,6 +13,8 @@
 
 #define SYSRQ_MASK    "/proc/sys/kernel/sysrq"
 #define SYSRQ_TRIGGER "/proc/sysrq-trigger"
+
+#define MAX_ARGS      0x10
 
 static void die() __attribute__((noreturn));
 static void die()
@@ -89,7 +90,7 @@ int main(int argc, char const **argv)
 
 	if (argc != 2) die();
 
-	args[i++] = "/usr/bin/systemctl";
+	args[i++] = SYSTEMCTL;
 
 	if (strcmp(argv[1], SYSRQ_REBOOT) == 0) {
 		sysrq_set(0x80);
