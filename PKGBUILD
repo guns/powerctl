@@ -1,8 +1,9 @@
 # Maintainer: Sung Pae <self@sungpae.com>
 pkgname=powerctl
-pkgver=v000.2.gd808274
+pkgver=
 pkgrel=1
 pkgdesc="Power management in a single static binary."
+license=('MIT')
 arch=('x86_64')
 groups=('guns')
 depends=('systemd')
