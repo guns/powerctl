@@ -2,7 +2,7 @@
 pkgname=powerctl
 pkgver=v000.2.gd808274
 pkgrel=1
-pkgdesc="Static wrapper around systemctl invocations for use with sudo privileges"
+pkgdesc="Power management in a single static binary."
 arch=('x86_64')
 groups=('guns')
 depends=('systemd')
@@ -13,5 +13,5 @@ pkgver() {
 
 package() {
     cd "$startdir"
-    make PREFIX='/usr/bin' DESTDIR="$pkgdir/" install
+    make CFLAGS="$CFLAGS -static" PREFIX='/usr/bin' DESTDIR="$pkgdir/" install
 }

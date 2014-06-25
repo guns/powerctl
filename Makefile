@@ -1,6 +1,6 @@
 PREFIX ?= /usr/local/bin
 CC = clang
-CFLAGS ?= -Weverything
+CFLAGS ?= -Weverything -static
 
 all:
 	$(CC) $(CFLAGS) powerctl.c -o powerctl
