@@ -50,33 +50,31 @@ fail:
 int main(int argc, char const **argv)
 {
 	const char *args[MAX_ARGS + 1] = { NULL };
-	int i = 0;
 
 	if (argc != 2) die();
-
-	args[i++] = SYSTEMCTL;
 
 	if (strcmp(argv[1], SYSRQ_REBOOT) == 0) {
 		return !!write_string("b", SYSRQ_TRIGGER);
 	} else if (strcmp(argv[1], SYS_SUSPEND) == 0) {
 		return !!write_string("mem", SYS_POWER_STATE);
 	} else if (strcmp(argv[1], SUSPEND) == 0) {
-		args[i++] = SUSPEND;
-		args[i++] = "--force";
-		args[i++] = "--ignore-inhibitors";
+		args[0] = SYSTEMCTL;
+		args[1] = SUSPEND;
+		args[2] = "--force";
+		args[3] = "--ignore-inhibitors";
 	} else if (strcmp(argv[1], REBOOT) == 0) {
-		args[i++] = REBOOT;
-		args[i++] = "--force";
-		args[i++] = "--ignore-inhibitors";
+		args[0] = SYSTEMCTL;
+		args[1] = REBOOT;
+		args[2] = "--force";
+		args[3] = "--ignore-inhibitors";
 	} else if (strcmp(argv[1], POWEROFF) == 0) {
-		args[i++] = POWEROFF;
-		args[i++] = "--force";
-		args[i++] = "--ignore-inhibitors";
+		args[0] = SYSTEMCTL;
+		args[1] = POWEROFF;
+		args[2] = "--force";
+		args[3] = "--ignore-inhibitors";
 	} else {
 		die();
 	}
-
-	if (i > MAX_ARGS) die();
 
 	return execv(args[0], (char * const *)args);
 }
