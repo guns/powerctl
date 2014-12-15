@@ -5,7 +5,7 @@ pkgrel=1
 pkgdesc="Power management in a single static binary."
 license=('MIT')
 arch=('x86_64')
-groups=('guns')
+groups=('nerv')
 depends=('systemd')
 
 pkgver() {
