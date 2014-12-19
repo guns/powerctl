@@ -9,7 +9,7 @@ groups=('nerv')
 depends=('systemd')
 
 pkgver() {
-    printf %s "$(git describe --long --tags | tr - .)"
+    git describe --long --tags | tr - .
 }
 
 package() {
