@@ -10,6 +10,7 @@
 #define REBOOT          "reboot"
 #define SYSRQ_REBOOT    "REBOOT"
 #define POWEROFF        "poweroff"
+#define SYSRQ_POWEROFF  "POWEROFF"
 #define SLOCK           "slock"
 #define SLOCK_SERVICE   "slock.service"
 
@@ -21,13 +22,14 @@
 static void die() __attribute__((noreturn));
 static void die()
 {
-	fprintf(stderr, "Usage: %s %s|%s|%s|%s|%s|%s\n",
+	fprintf(stderr, "Usage: %s %s|%s|%s|%s|%s|%s|%s\n",
 	        PROGNAME,
 	        SUSPEND,
 	        SYS_SUSPEND,
 	        REBOOT,
 	        SYSRQ_REBOOT,
 	        POWEROFF,
+	        SYSRQ_POWEROFF,
 	        SLOCK);
 	exit(1);
 }
@@ -57,6 +59,8 @@ int main(int argc, char const **argv)
 
 	if (strcmp(argv[1], SYSRQ_REBOOT) == 0) {
 		return !!write_string("b", SYSRQ_TRIGGER);
+	} else if (strcmp(argv[1], SYSRQ_POWEROFF) == 0) {
+		return !!write_string("o", SYSRQ_TRIGGER);
 	} else if (strcmp(argv[1], SYS_SUSPEND) == 0) {
 		return !!write_string("mem", SYS_POWER_STATE);
 	} else if (strcmp(argv[1], SUSPEND) == 0) {
