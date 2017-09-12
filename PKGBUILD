@@ -1,6 +1,6 @@
 # Maintainer: Sung Pae <self@sungpae.com>
 pkgname=powerctl
-pkgver=
+pkgver=0
 pkgrel=1
 pkgdesc="Power management in a single static binary."
 license=('MIT')
@@ -14,5 +14,6 @@ pkgver() {
 
 package() {
     cd "$startdir"
-    make CFLAGS="$CFLAGS -static" PREFIX='/usr/bin' DESTDIR="$pkgdir/" install
+    mkdir -p "pkg/$pkgname/usr/bin"
+    go build -i -v -o "pkg/$pkgname/usr/bin/$pkgname"
 }
